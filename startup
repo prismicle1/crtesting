@@ -35,16 +35,10 @@ function drawMenu()
 end
 
 -- This function handles the login logic
-function login()
+function login(user, pass)
     -- Set the correct username and password
     local correctUsername = "InWallControlRoom"
     local correctPassword = "NovaCity123"
-    
-    -- Prompt user for username and password
-    pos(23,8)
-    local user = read()
-    pos(23,10)
-    local pass = read("*")
     
     -- Check credentials
     if user == correctUsername and pass == correctPassword then
@@ -94,12 +88,24 @@ end
 function main()
     drawMenu()
     
+    local user = ""
+    local pass = ""
+    
     -- Wait for a mouse click event to initiate login
     while true do
         local event, button, mx, my = os.pullEvent()
         if event == "mouse_click" then
-            if mx >= 14 and mx <= 20 and my == 12 and button == 1 then
-                login()
+            if mx >= 23 and mx <= 38 and my == 8 and button == 1 then
+                -- Allow user to type in the username field
+                pos(23,8)
+                user = read()
+            elseif mx >= 23 and mx <= 38 and my == 10 and button == 1 then
+                -- Allow user to type in the password field
+                pos(23,10)
+                pass = read("*")
+            elseif mx >= 14 and mx <= 20 and my == 12 and button == 1 then
+                -- Click the "Login" button to submit the form
+                login(user, pass)
                 break
             end
         end
