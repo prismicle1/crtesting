@@ -5,13 +5,18 @@ function bCol(...) return term.setBackgroundColor(...) end
 function box(...) return paintutils.drawFilledBox(...) end
 function line(...) return paintutils.drawLine(...) end
 
-x,y = term.getSize()
+x, y = term.getSize()
 
--- Background UI
+-- Globals to store input
+local user = ""
+local pass = ""
+local focusedField = nil -- "user" or "pass"
+
+-- Draw UI
 function drawMenu()
     cls()
     pos(1,1)
-    box(1,1,x,y,colors.black) -- Black background
+    box(1,1,x,y,colors.black) -- Background
     box(12,6,40,13,colors.gray) -- Login Box
     line(12,6,40,6,colors.lightGray) -- Top bar
     line(23,8,38,8,colors.black) -- Username field
@@ -32,10 +37,16 @@ function drawMenu()
 
     tCol(colors.white)
     bCol(colors.black)
+
+    -- Draw existing typed text
+    pos(24,8)
+    write(user)
+    pos(24,10)
+    write(string.rep("*", #pass))
 end
 
--- Access logic
-function login(user, pass)
+-- Check login
+function login()
     local correctUsername = "InWallControlRoom"
     local correctPassword = "NovaCity123"
 
@@ -48,7 +59,6 @@ end
 
 function accessGranted()
     cls()
-    pos(1,1)
     box(1,1,x,y,colors.black)
 
     tCol(colors.green)
@@ -59,12 +69,11 @@ function accessGranted()
     write("Welcome, Control Room Operator!")
 
     sleep(2)
-    showFiles()
+    loadingFiles()
 end
 
 function accessDenied()
     cls()
-    pos(1,1)
     box(1,1,x,y,colors.black)
 
     tCol(colors.red)
@@ -76,9 +85,25 @@ function accessDenied()
     os.reboot()
 end
 
+function loadingFiles()
+    cls()
+    box(1,1,x,y,colors.black)
+
+    tCol(colors.white)
+    bCol(colors.black)
+    pos(x/2 - 7, y/2)
+    write("Loading Files")
+    for i = 1, 3 do
+        sleep(0.5)
+        write(".")
+    end
+
+    sleep(0.5)
+    showFiles()
+end
+
 function showFiles()
     cls()
-    pos(1,1)
     box(1,1,x,y,colors.black)
 
     tCol(colors.white)
@@ -88,37 +113,54 @@ function showFiles()
     write("Organizations")
 end
 
--- Main program
 function main()
     drawMenu()
 
-    local user = ""
-    local pass = ""
-
     while true do
-        local event, button, mx, my = os.pullEvent()
+        local event, p1, p2, p3 = os.pullEvent()
 
         if event == "mouse_click" then
+            local button = p1
+            local mx = p2
+            local my = p3
+
+            -- Check field clicks
             if mx >= 23 and mx <= 38 and my == 8 and button == 1 then
-                -- Clicked Username
-                pos(23,8)
-                tCol(colors.white)
-                bCol(colors.black)
-                user = read()
+                focusedField = "user"
             elseif mx >= 23 and mx <= 38 and my == 10 and button == 1 then
-                -- Clicked Password
-                pos(23,10)
-                tCol(colors.white)
-                bCol(colors.black)
-                pass = read("*")
+                focusedField = "pass"
             elseif mx >= 14 and mx <= 20 and my == 12 and button == 1 then
-                -- Clicked Login Button
-                login(user, pass)
+                login()
                 break
+            end
+
+        elseif event == "char" then
+            if focusedField == "user" then
+                user = user .. p1
+            elseif focusedField == "pass" then
+                pass = pass .. p1
+            end
+            drawMenu()
+
+        elseif event == "key" then
+            local key = p1
+            if key == keys.backspace then
+                if focusedField == "user" and #user > 0 then
+                    user = user:sub(1, -2)
+                elseif focusedField == "pass" and #pass > 0 then
+                    pass = pass:sub(1, -2)
+                end
+                drawMenu()
+            elseif key == keys.enter then
+                if focusedField == "user" then
+                    focusedField = "pass"
+                elseif focusedField == "pass" then
+                    login()
+                    break
+                end
             end
         end
     end
 end
 
--- Run
 main()
