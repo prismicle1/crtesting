@@ -54,22 +54,19 @@ function accessGranted()
     pos(1,1)
     box(1,1,x,y,colors.black) -- Dark Background
     
+    -- Centralize and Display Access Granted message
     tCol(colors.green)
     bCol(colors.black)
-    pos(1,1)
+    pos(x/2 - 6, y/2 - 1)
     write("Access Granted")
-    pos(1,3)
-    write("Welcome, Control Room Operator!")
-    
+    pos(x/2 - 5, y/2)
+    write("Welcome!")
+
     -- Delay for 2 seconds before showing files
     sleep(2)
     
     -- Show the file (Organizations)
-    tCol(colors.white)
-    pos(3,5)
-    write("Files:")
-    pos(5,7)
-    write("Organizations")
+    showFiles()
 end
 
 -- When access is denied, show message and restart
@@ -78,14 +75,28 @@ function accessDenied()
     pos(1,1)
     box(1,1,x,y,colors.black) -- Dark Background
     
+    -- Centralize and Display Access Denied message
     tCol(colors.red)
     bCol(colors.black)
-    pos(1,1)
+    pos(x/2 - 6, y/2 - 1)
     write("Access Denied")
     
     -- Delay before clearing and restarting
     sleep(2)
     os.reboot()
+end
+
+-- Function to show files after access is granted
+function showFiles()
+    cls()
+    pos(1,1)
+    box(1,1,x,y,colors.black) -- Dark Background
+    
+    tCol(colors.white)
+    pos(3,5)
+    write("Files:")
+    pos(5,7)
+    write("Organizations")
 end
 
 -- Main function to start the process
