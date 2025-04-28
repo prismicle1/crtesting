@@ -7,40 +7,38 @@ function line(...) return paintutils.drawLine(...) end
 
 x,y = term.getSize()
 
--- Background Color and other UI elements
+-- Background UI
 function drawMenu()
     cls()
     pos(1,1)
-    box(1,1,x,y,colors.black) -- Dark Background
-    box(12,6,40,13,colors.gray) -- Login Menu Box
-    line(12,6,40,6,colors.lightGray) -- Top Bar
-    line(23,8,38,8,colors.black) -- Username Field Box
-    line(23,10,38,10,colors.black) -- Password Field Box
-    line(14,12,20,12,colors.green) -- Login Button
-    
+    box(1,1,x,y,colors.black) -- Black background
+    box(12,6,40,13,colors.gray) -- Login Box
+    line(12,6,40,6,colors.lightGray) -- Top bar
+    line(23,8,38,8,colors.black) -- Username field
+    line(23,10,38,10,colors.black) -- Password field
+    line(14,12,20,12,colors.green) -- Login button
+
     tCol(colors.white)
     bCol(colors.black)
     pos(14,8)
     write("USERNAME:")
     pos(14,10)
     write("PASSWORD:")
-    
+
     tCol(colors.black)
     bCol(colors.green)
     pos(15,12)
     write("LOGIN")
-    
+
     tCol(colors.white)
     bCol(colors.black)
 end
 
--- This function handles the login logic
+-- Access logic
 function login(user, pass)
-    -- Set the correct username and password
     local correctUsername = "InWallControlRoom"
     local correctPassword = "NovaCity123"
-    
-    -- Check credentials
+
     if user == correctUsername and pass == correctPassword then
         accessGranted()
     else
@@ -48,50 +46,41 @@ function login(user, pass)
     end
 end
 
--- When access is granted, show files
 function accessGranted()
     cls()
     pos(1,1)
-    box(1,1,x,y,colors.black) -- Dark Background
-    
-    -- Centralize and Display Access Granted message
+    box(1,1,x,y,colors.black)
+
     tCol(colors.green)
     bCol(colors.black)
     pos(x/2 - 6, y/2 - 1)
     write("Access Granted")
-    pos(x/2 - 5, y/2)
-    write("Welcome!")
+    pos(x/2 - 13, y/2)
+    write("Welcome, Control Room Operator!")
 
-    -- Delay for 2 seconds before showing files
     sleep(2)
-    
-    -- Show the file (Organizations)
     showFiles()
 end
 
--- When access is denied, show message and restart
 function accessDenied()
     cls()
     pos(1,1)
-    box(1,1,x,y,colors.black) -- Dark Background
-    
-    -- Centralize and Display Access Denied message
+    box(1,1,x,y,colors.black)
+
     tCol(colors.red)
     bCol(colors.black)
-    pos(x/2 - 6, y/2 - 1)
+    pos(x/2 - 6, y/2)
     write("Access Denied")
-    
-    -- Delay before clearing and restarting
+
     sleep(2)
     os.reboot()
 end
 
--- Function to show files after access is granted
 function showFiles()
     cls()
     pos(1,1)
-    box(1,1,x,y,colors.black) -- Dark Background
-    
+    box(1,1,x,y,colors.black)
+
     tCol(colors.white)
     pos(3,5)
     write("Files:")
@@ -99,35 +88,31 @@ function showFiles()
     write("Organizations")
 end
 
--- Main function to start the process
+-- Main program
 function main()
     drawMenu()
-    
+
     local user = ""
     local pass = ""
-    
-    -- Flag to check if username or password is being typed
-    local typingUsername = true
-    local typingPassword = false
-    
-    -- Wait for a mouse click event to initiate login
+
     while true do
         local event, button, mx, my = os.pullEvent()
+
         if event == "mouse_click" then
             if mx >= 23 and mx <= 38 and my == 8 and button == 1 then
-                -- Allow user to type in the username field
-                typingUsername = true
-                typingPassword = false
+                -- Clicked Username
                 pos(23,8)
+                tCol(colors.white)
+                bCol(colors.black)
                 user = read()
             elseif mx >= 23 and mx <= 38 and my == 10 and button == 1 then
-                -- Allow user to type in the password field
-                typingUsername = false
-                typingPassword = true
+                -- Clicked Password
                 pos(23,10)
+                tCol(colors.white)
+                bCol(colors.black)
                 pass = read("*")
             elseif mx >= 14 and mx <= 20 and my == 12 and button == 1 then
-                -- Click the "Login" button to submit the form
+                -- Clicked Login Button
                 login(user, pass)
                 break
             end
@@ -135,6 +120,5 @@ function main()
     end
 end
 
---------------------------------------------------------------
--- Start the program
+-- Run
 main()
