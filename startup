@@ -57,8 +57,12 @@ function accessGranted()
     tCol(colors.green)
     bCol(colors.black)
     pos(1,1)
-    write("Access Granted\n")
-    write("Welcome, InWallControlRoom!")
+    write("Access Granted")
+    pos(1,3)
+    write("Welcome, Control Room Operator!")
+    
+    -- Delay for 2 seconds before showing files
+    sleep(2)
     
     -- Show the file (Organizations)
     tCol(colors.white)
@@ -91,16 +95,24 @@ function main()
     local user = ""
     local pass = ""
     
+    -- Flag to check if username or password is being typed
+    local typingUsername = true
+    local typingPassword = false
+    
     -- Wait for a mouse click event to initiate login
     while true do
         local event, button, mx, my = os.pullEvent()
         if event == "mouse_click" then
             if mx >= 23 and mx <= 38 and my == 8 and button == 1 then
                 -- Allow user to type in the username field
+                typingUsername = true
+                typingPassword = false
                 pos(23,8)
                 user = read()
             elseif mx >= 23 and mx <= 38 and my == 10 and button == 1 then
                 -- Allow user to type in the password field
+                typingUsername = false
+                typingPassword = true
                 pos(23,10)
                 pass = read("*")
             elseif mx >= 14 and mx <= 20 and my == 12 and button == 1 then
